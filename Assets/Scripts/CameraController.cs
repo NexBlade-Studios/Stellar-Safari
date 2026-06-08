@@ -8,7 +8,6 @@ public class CameraController : MonoBehaviour
     // Public variables
     
     // Private variables
-
     private Ray cameraObstructRay;
     private GameObject obstructChecker;
     private MeshRenderer[] obstruction;

@@ -1,19 +1,18 @@
 using NUnit.Framework;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
 public class TileManager : MonoBehaviour
 {
+    // Public variables
     public Transform player;
     public float fadeDistance;
-
-    public List<GameObject> tiles;
-    private Dictionary<int, GameObject> tilesInScene;
+    public GameObject[] tiles;
 
     void Start()
     {
+        // References
         player = GameObject.Find("Astronaut").transform;
         StartingTileGen();
     }
@@ -28,7 +27,7 @@ public class TileManager : MonoBehaviour
         Instantiate(tiles[1], Vector3.zero, Quaternion.identity);
         int rnd = 0;
         int rotation = 0;
-        for (int i = 0; i < tiles.Count; i++)
+        for (int i = 0; i < tiles.Length; i++)
         {
             rnd = UnityEngine.Random.Range(1, 6);
             rotation = UnityEngine.Random.Range(0, 3);

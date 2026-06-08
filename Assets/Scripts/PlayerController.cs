@@ -9,12 +9,13 @@ public class PlayerController : MonoBehaviour
     public Rigidbody rb;
 
     // Private variables
-
     private Ray moveCheckRay;
     private SwipeLogger swipeLogger;
     private GroundChecker groundChecker;
+    private Animator anim;
 
     private bool isMoving;
+    private bool flipflop = true;
     [SerializeField] private bool isRotating;
     [SerializeField] private float moveForce;
     [SerializeField] private float jumpForce;
@@ -26,6 +27,7 @@ public class PlayerController : MonoBehaviour
         rb = gameObject.GetComponent<Rigidbody>();
         swipeLogger = GameObject.Find("SwipeLogger").GetComponent<SwipeLogger>();
         groundChecker = GameObject.Find("GroundChecker").GetComponent<GroundChecker>();
+        anim = gameObject.GetComponent<Animator>();
     }
 
     void Update()
@@ -65,6 +67,16 @@ public class PlayerController : MonoBehaviour
             // Checks if player can move and if player has rotated
             if (CanMove(moveCheckDir) && transform.eulerAngles.y == angle)
             {
+                if (flipflop)
+                {
+                    anim.Play("Walk Cycle L");
+                    flipflop = false;
+                }
+                else
+                {
+                    anim.Play("Walk Cycle R");
+                    flipflop = true;
+                }
                 rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse); // Moves player
                 rb.AddForce(moveCheckDir * moveForce, ForceMode.Impulse);
             }
@@ -74,6 +86,7 @@ public class PlayerController : MonoBehaviour
     IEnumerator RotatePlayer(Quaternion target, float duration)
     {
         isRotating = true;
+        anim.Play("Rotating");
         // Rotates player to target rotation - independent of FPS!
         while (transform.localRotation != target)
         {
