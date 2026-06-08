@@ -1,12 +1,17 @@
+using NUnit.Framework;
+using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
+    // Public variables
+    
     // Private variables
 
     private Ray cameraObstructRay;
     private GameObject obstructChecker;
-    private GameObject obstruction;
+    private MeshRenderer[] obstruction;
     [SerializeField] private bool obstructed = false;
     [SerializeField] private float maxRayDistance;
     
@@ -28,16 +33,23 @@ public class CameraController : MonoBehaviour
         cameraObstructRay = new(transform.position, obstructChecker.transform.forward);
         if (Physics.Raycast(cameraObstructRay, out hit, maxRayDistance))
         {
-            hit.collider.gameObject.SetActive(false);
             obstructed = true;
-            obstruction = hit.collider.gameObject;
+            MeshRenderer[] renderer;
+            renderer = hit.collider.gameObject.GetComponentsInChildren<MeshRenderer>();
+            for (int i = 0; i < renderer.Length; i++)
+            {
+                renderer[i].enabled = false;
+            }
+            obstruction = renderer;
         }
         else { obstructed = false; }
 
         if (!obstructed && obstruction != null)
         {
-            obstruction.SetActive(true);
-            obstruction = null;
+            for (int i = 0; i < obstruction.Length; i++)
+            {
+                obstruction[i].enabled = true;
+            }
         }
     }
 }
