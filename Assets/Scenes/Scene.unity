@@ -622,13 +622,13 @@ MonoBehaviour:
   player: {fileID: 0}
   fadeDistance: 0
   tiles:
-  - {fileID: 367689344512802839, guid: 6384e68b4ee0e9e4ba968a1acd12721b, type: 3}
-  - {fileID: 5926705109472552952, guid: 2c0100d77dfdf1f43aa9c5ad893db35d, type: 3}
   - {fileID: 2793803175931258702, guid: 7c0c6113223c3334c8fa4e12dd764428, type: 3}
   - {fileID: 5236801205524941935, guid: c0975fd567fac174cb2f9f80d6eebfaa, type: 3}
   - {fileID: 6935152848974284826, guid: 3d65509c415b78b46a1e607e8ae5f4b2, type: 3}
   - {fileID: 1691424354447637405, guid: e742eb931fce0094c97e0b50710ba46b, type: 3}
   - {fileID: 6670052313791417205, guid: 04623afbf5456f946bf13504ef1af2f4, type: 3}
+  - {fileID: 5926705109472552952, guid: 2c0100d77dfdf1f43aa9c5ad893db35d, type: 3}
+  gridScale: 0
 --- !u!1 &1262390946
 GameObject:
   m_ObjectHideFlags: 0
