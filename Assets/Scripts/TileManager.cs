@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,10 +20,12 @@ public class TileManager : MonoBehaviour
     public Dictionary<Vector2Int, GridTile> mapGrid = new Dictionary<Vector2Int, GridTile>();
     public GameObject[] tiles;
     public GameObject startTile;
+    public GameObject[] ores;
     
     // Private variables
     private int gridScale = 9;
     private Vector2Int tileOrigin;
+    private bool oreSpawning = false;
     private readonly Vector2Int[] directions =
         { Vector2Int.up, Vector2Int.up + Vector2Int.left, Vector2Int.up + Vector2Int.right, 
         Vector2Int.down, Vector2Int.down + Vector2Int.left, Vector2Int.down + Vector2Int.right,
@@ -61,18 +64,63 @@ public class TileManager : MonoBehaviour
     {
         foreach (Vector2Int dir in directions)
         {
-            int rnd = Random.Range(0, tiles.Length);
-            int rndRot = Random.Range(0, 4);
+            int rnd = UnityEngine.Random.Range(0, tiles.Length);
+            int rndRot = UnityEngine.Random.Range(0, 4);
             Vector2Int checkPos = centre + dir;
             if (CheckIfEmpty(checkPos))
             {
                 Quaternion rotation = Quaternion.Euler(0, rndRot * 90, 0);
-                GameObject instance = Instantiate(tiles[rnd], new Vector3(checkPos.x * gridScale, 0f, checkPos.y * gridScale), rotation);
+                Vector3 spawnPos = new(checkPos.x * gridScale, 0f, checkPos.y * gridScale);
+                GameObject instance = Instantiate(tiles[rnd], spawnPos, rotation);
+                if (rnd == (tiles.Length - 1) && oreSpawning == false)
+                {
+                    SpawnOre(spawnPos, rotation);
+                }
                 GridTile tile = new() { rotation = rotation, instance = instance };
                 mapGrid.Add(checkPos, tile);
             }
         }
         
+    }
+    private void SpawnOre(Vector3 pos, Quaternion rot)
+    {
+        int spawnChance = 1;
+        int rndOre = UnityEngine.Random.Range(0, ores.Length);
+        int multiplier = 1;
+        Vector3 tempPos = pos;
+
+        oreSpawning = true;
+
+        if (OreMultiplier("Copper", rndOre))
+        {
+            multiplier = 1;
+        }
+        else if (OreMultiplier("Iron", rndOre))
+        {
+            multiplier = 2;
+        }
+
+        if ((rndOre % 2) == 0)
+        {
+            spawnChance = 4;
+        }
+        else
+        {
+            spawnChance = 2;
+        }
+        spawnChance *= multiplier;
+        int spawnRate = UnityEngine.Random.Range(0, spawnChance);
+        if (spawnRate == 0)
+        {
+            Vector3 orePos = new(tempPos.x, 0f, tempPos.z);
+            Instantiate(ores[rndOre], (ores[rndOre].transform.position + orePos), rot);
+        }
+        oreSpawning = false;
+    }
+
+    private bool OreMultiplier(string target, int index)
+    {
+         return ores[index].name.ToString().Contains(target);
     }
     private bool CheckIfEmpty(Vector2Int pos)
     {

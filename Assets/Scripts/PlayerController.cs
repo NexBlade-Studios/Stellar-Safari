@@ -45,7 +45,6 @@ public class PlayerController : MonoBehaviour
             // Rounds player position to ensure grid movement
             transform.localPosition = RoundTransform(transform.localPosition.x, transform.localPosition.y, transform.localPosition.z);
             swipeLogger.swipeDir = null; // If player is not moving, swipe direction is reset
-            isMoving = false;
         }
         if (!groundChecker.onGround)
         {
@@ -77,9 +76,12 @@ public class PlayerController : MonoBehaviour
                     anim.Play("Walk Cycle R");
                     flipflop = true;
                 }
+                rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, 0);
+
                 rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse); // Moves player
                 rb.AddForce(moveCheckDir * moveForce, ForceMode.Impulse);
             }
+            isMoving = false;
         }
     }
 
