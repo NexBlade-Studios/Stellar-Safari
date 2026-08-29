@@ -23,7 +23,7 @@ public class TileManager : MonoBehaviour
     public GameObject[] ores;
     
     // Private variables
-    private int gridScale = 9;
+    private readonly int gridScale = 9;
     private Vector2Int tileOrigin;
     private bool oreSpawning = false;
     private readonly Vector2Int[] directions =

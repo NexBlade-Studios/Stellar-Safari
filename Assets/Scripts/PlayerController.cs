@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEditor;
 using UnityEngine;
 
@@ -7,6 +8,7 @@ public class PlayerController : MonoBehaviour
 {
     // Public variables
     public Rigidbody rb;
+    public Vector3 oreCheckDir;
 
     // Private variables
     private Ray moveCheckRay;
@@ -53,18 +55,19 @@ public class PlayerController : MonoBehaviour
     }
 
     private void Movement(string dir, KeyCode key, Vector3 moveCheckDir, int angle)
-    {
+    {        
         // Checks for input and player is grounded
         if ((swipeLogger.swipeDir == dir || Input.GetKeyDown(key)) && groundChecker.onGround)
         {
             swipeLogger.swipeDir = "Null"; // Resets swipe direction
+            oreCheckDir = moveCheckDir;
             isMoving = true;
             if (!isRotating)
             {
                 StartCoroutine(RotatePlayer(Quaternion.Euler(0, angle, 0), rotateDuration)); // Rotates player according to Quaternion
             }
             // Checks if player can move and if player has rotated
-            if (CanMove(moveCheckDir) && transform.eulerAngles.y == angle)
+            if (CanMove(moveCheckDir, out _) && transform.eulerAngles.y == angle)
             {
                 if (flipflop)
                 {
@@ -104,9 +107,9 @@ public class PlayerController : MonoBehaviour
         return newTransform;
     }
     // Raycast to check if there is an obstacle in front of the player
-    private bool CanMove(Vector3 moveDir)
+    public bool CanMove(Vector3 moveDir, out RaycastHit hit)
     {
         moveCheckRay = new(groundChecker.transform.position, moveDir);
-        if (Physics.Raycast(moveCheckRay, 3f)) {return false;} else {return true;}
+        if (Physics.Raycast(moveCheckRay, out hit, 3f)) {return false;} else {return true;}
     }
 }
