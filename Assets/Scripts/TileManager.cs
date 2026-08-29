@@ -21,30 +21,45 @@ public class TileManager : MonoBehaviour
     public GameObject[] tiles;
     public GameObject startTile;
     public GameObject[] ores;
+    public int generationRadius = 5; // Maximum radius from player
     
     // Private variables
     private readonly int gridScale = 9;
     private Vector2Int tileOrigin;
+    private Vector2Int lastDirection = Vector2Int.up;
     private bool oreSpawning = false;
-    private readonly Vector2Int[] directions =
-        { Vector2Int.up, Vector2Int.up + Vector2Int.left, Vector2Int.up + Vector2Int.right, 
-        Vector2Int.down, Vector2Int.down + Vector2Int.left, Vector2Int.down + Vector2Int.right,
-        Vector2Int.left, Vector2Int.right };
 
     void Start()
     {
         // References
         player = GameObject.Find("Astronaut").transform;
-        tileOrigin = new Vector2Int(Mathf.RoundToInt(player.position.x), Mathf.RoundToInt(player.position.z));
+        tileOrigin = new Vector2Int(
+            Mathf.RoundToInt(player.position.x / gridScale), 
+            Mathf.RoundToInt(player.position.z / gridScale)
+        ); // Ensures the starting world position matches the grid
         StartingTileGen();
+
+        TileGen(tileOrigin, lastDirection); // Tile generation happens before the scene is loaded
     }
     void Update()
     {
-        TileGen(tileOrigin);
-        Vector2Int currentPos = new(Mathf.RoundToInt(player.position.x / gridScale), Mathf.RoundToInt(player.position.z / gridScale));
+        Vector2Int currentPos = new(
+            Mathf.RoundToInt(player.position.x / gridScale), 
+            Mathf.RoundToInt(player.position.z / gridScale)
+        ); // Gets the player's world position and converts it to a grid position
+        // Checks if the player has entered a new tile, stops constant calling of tileGen is not moving
         if (tileOrigin != currentPos)
         {
+            Vector2Int movementDirection = currentPos - tileOrigin; // Calculates movement direction
+
+            if (movementDirection != Vector2Int.zero)
+            {
+                lastDirection = movementDirection;
+            }
+
             tileOrigin = currentPos;
+
+            TileGen(tileOrigin, lastDirection);
         }
     }
 
@@ -60,27 +75,66 @@ public class TileManager : MonoBehaviour
         mapGrid.Add(new Vector2Int(0, 0), tile);
     }
 
-    private void TileGen(Vector2Int centre)
+    // Determines where tiles should spawn
+    private void TileGen(Vector2Int centre, Vector2Int direction)
     {
-        foreach (Vector2Int dir in directions)
+        for (int x = -generationRadius;  x <= generationRadius; x++)
         {
-            int rnd = UnityEngine.Random.Range(0, tiles.Length);
-            int rndRot = UnityEngine.Random.Range(0, 4);
-            Vector2Int checkPos = centre + dir;
-            if (CheckIfEmpty(checkPos))
+            for (int y = -generationRadius; y <= generationRadius; y++)
             {
-                Quaternion rotation = Quaternion.Euler(0, rndRot * 90, 0);
-                Vector3 spawnPos = new(checkPos.x * gridScale, 0f, checkPos.y * gridScale);
-                GameObject instance = Instantiate(tiles[rnd], spawnPos, rotation);
-                if (rnd == (tiles.Length - 1) && oreSpawning == false)
+                Vector2Int offset = new(x, y); // Represents position relative to the player
+
+                if (offset.sqrMagnitude > (generationRadius * generationRadius)) // Gives the square magnitude instead of running a slow sqrt
                 {
-                    SpawnOre(spawnPos, rotation);
+                    continue; // Removes the corners to have the semicircle shape
                 }
-                GridTile tile = new() { rotation = rotation, instance = instance };
-                mapGrid.Add(checkPos, tile);
+
+                // Checks whether the tile is in front, behind or to the side of the player
+                // If +ve then in front, -ve then behind and 0 then to the side
+                int dotProduct = offset.x * direction.x + offset.y * direction.y;
+
+                // Removes the tiles behind the player
+                if (dotProduct < 0)
+                {
+                    continue;
+                }
+
+                Vector2Int checkPos = centre + offset;
+
+                SpawnTileAt(checkPos);
             }
         }
-        
+    }
+
+    // Attempts to spawn tile at calculated position
+    private void SpawnTileAt(Vector2Int checkPos)
+    {
+        // If not empty return
+        if (!CheckIfEmpty(checkPos)) { return; }
+
+        // Random tile and rotation
+        int rnd = UnityEngine.Random.Range(0, tiles.Length);
+        int rndRot = UnityEngine.Random.Range(0, 4);
+        Quaternion rotation = Quaternion.Euler(0, rndRot * 90, 0);
+
+        // Spawn position from grid position
+        Vector3 spawnPos = new(checkPos.x * gridScale, 0f, checkPos.y * gridScale);
+        // Stores current instance
+        GameObject instance = Instantiate(tiles[rnd], spawnPos, rotation);
+
+        // Tries to spawn ore if the random tile is blank (the last tile)
+        if (rnd == (tiles.Length - 1) && !oreSpawning)
+        {
+            SpawnOre(spawnPos, rotation);
+        }
+
+        // New GridTile object with information about the tile
+        GridTile tile = new()
+        {
+            rotation = rotation,
+            instance = instance
+        };
+        mapGrid.Add(checkPos, tile);
     }
     private void SpawnOre(Vector3 pos, Quaternion rot)
     {
@@ -122,11 +176,10 @@ public class TileManager : MonoBehaviour
     {
          return ores[index].name.ToString().Contains(target);
     }
+    // Checks if the grid position already has a tile
     private bool CheckIfEmpty(Vector2Int pos)
     {
         if (mapGrid.ContainsKey(pos)) { return false; }
         return true;
-
-        // if (mapGrid.TryGetValue(pos, out GridTile tile)) { tile.instance = Instantiate}
     }
 }
