@@ -12,6 +12,8 @@ public class TileManager : MonoBehaviour
     {
         public Quaternion rotation;
         public GameObject instance;
+        public GameObject prefab;
+        public bool permanent;
     }
 
     // Public variables
@@ -21,13 +23,14 @@ public class TileManager : MonoBehaviour
     public GameObject[] tiles;
     public GameObject startTile;
     public GameObject[] ores;
-    public int generationRadius = 5; // Maximum radius from player
+    public int generationRadius = 4; // Maximum radius from player
     
     // Private variables
     private readonly int gridScale = 9;
     private Vector2Int tileOrigin;
     private Vector2Int lastDirection = Vector2Int.up;
     private bool oreSpawning = false;
+    private Dictionary<GameObject, Queue<GameObject>> tilePools = new Dictionary<GameObject, Queue<GameObject>>();
 
     void Start()
     {
@@ -60,6 +63,8 @@ public class TileManager : MonoBehaviour
             tileOrigin = currentPos;
 
             TileGen(tileOrigin, lastDirection);
+
+            DespawnTiles();
         }
     }
 
@@ -67,11 +72,21 @@ public class TileManager : MonoBehaviour
     {
         // Rocket Tile
         GameObject instance = Instantiate(startTile, new Vector3(0, 0, player.position.z - 9), Quaternion.identity);
-        GridTile tile = new() { rotation = new Quaternion(0, 0, 0, 0), instance = instance };
+        GridTile tile = new() {
+            rotation = new Quaternion(0, 0, 0, 0),
+            instance = instance,
+            permanent = true
+        };
         mapGrid.Add(new Vector2Int(0, -1), tile);
         // Base Tile
-        instance = Instantiate(tiles[5], new Vector3(0, 0, player.position.z), Quaternion.identity);
-        tile = new() { rotation = new Quaternion(0, 0, 0, 0), instance = instance };
+        GameObject prefab = tiles[5];
+        instance = Instantiate(prefab, new Vector3(0, 0, player.position.z), Quaternion.identity);
+        tile = new() {
+            rotation = new Quaternion(0, 0, 0, 0),
+            instance = instance,
+            prefab = prefab,
+            permanent = true
+        };
         mapGrid.Add(new Vector2Int(0, 0), tile);
     }
 
@@ -119,8 +134,10 @@ public class TileManager : MonoBehaviour
 
         // Spawn position from grid position
         Vector3 spawnPos = new(checkPos.x * gridScale, 0f, checkPos.y * gridScale);
-        // Stores current instance
-        GameObject instance = Instantiate(tiles[rnd], spawnPos, rotation);
+        // Gets current prefab
+        GameObject prefab = tiles[rnd];
+        // Checks if tile is in pool
+        GameObject instance = GetTileFromPool(prefab, spawnPos, rotation);
 
         // Tries to spawn ore if the random tile is blank (the last tile)
         if (rnd == (tiles.Length - 1) && !oreSpawning)
@@ -132,9 +149,77 @@ public class TileManager : MonoBehaviour
         GridTile tile = new()
         {
             rotation = rotation,
-            instance = instance
+            instance = instance,
+            prefab = prefab
         };
         mapGrid.Add(checkPos, tile);
+    }
+
+    private GameObject GetTileFromPool(GameObject prefab, Vector3 position, Quaternion rotation)
+    {
+        // Checks if the tile that is to be instantiated is already in the pool
+        if (tilePools.TryGetValue(prefab, out Queue<GameObject> pool))
+        {
+            // If it is, it is dequeued
+            if (pool.Count > 0)
+            {
+                GameObject instance = pool.Dequeue();
+
+                instance.transform.SetPositionAndRotation(position, rotation);
+
+                instance.SetActive(true);
+
+                return instance;
+            }
+        }
+        // If it isn't then the tile is instantiated
+        return Instantiate(prefab, position, rotation);
+    }
+
+    private void ReturnTileToPool(GridTile tile)
+    {
+        // When out of range, the tile is returned to the pool
+        tile.instance.SetActive(false);
+
+        // If the queue of that tile doesn't exist, the queue is created
+        if (!tilePools.ContainsKey(tile.prefab))
+        {
+            tilePools[tile.prefab] = new Queue<GameObject>();
+        }
+
+        // Tile is queued
+        tilePools[tile.prefab].Enqueue(tile.instance);
+    }
+
+    private void DespawnTiles()
+    {
+        List<Vector2Int> tilesToRemove = new();
+
+        foreach (var pair in mapGrid)
+        {
+            if (pair.Value.permanent) { continue; }
+            
+            Vector2Int tilePos = pair.Key;
+
+            int distanceX = tilePos.x - tileOrigin.x;
+            int distanceY = tilePos.y - tileOrigin.y;
+            int sqrDistance = distanceX * distanceX + distanceY * distanceY;
+            int despawnRadius = generationRadius + 2;
+
+            if (sqrDistance > despawnRadius * despawnRadius)
+            {
+                tilesToRemove.Add(tilePos);
+            }
+        }
+
+        foreach (Vector2Int tilePos in tilesToRemove)
+        {
+            GridTile tile = mapGrid[tilePos];
+
+            ReturnTileToPool(tile);
+
+            mapGrid.Remove(tilePos);
+        }
     }
     private void SpawnOre(Vector3 pos, Quaternion rot)
     {
