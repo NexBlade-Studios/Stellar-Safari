@@ -5,6 +5,7 @@ public class MineOre : MonoBehaviour
     private PlayerInteractUI playerInteractUI;
     private PlayerController playerController;
     private SwipeLogger swipeLogger;
+    private bool showingPrompt;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -25,24 +26,29 @@ public class MineOre : MonoBehaviour
         RaycastHit hit;
         if (!playerController.CanMove(playerController.oreCheckDir, out hit))
         {
-            Debug.Log(playerController.oreCheckDir);
             if (hit.collider.CompareTag("Ore"))
             {
-                string message;
-                if (Application.isMobilePlatform)
+                if (!showingPrompt)
                 {
-                    message = "Tap <sprite name=\"tap\"> to Mine ";
+                    string message;
+                    if (Application.isMobilePlatform)
+                    {
+                        message = "Tap <sprite name=\"tap\"> to Mine ";
+                    }
+                    else
+                    {
+                        message = "Press <sprite name=\"E\"> to mine ";
+                    }
+                    playerInteractUI.Show(message);
+                    showingPrompt = true;
                 }
-                else
-                {
-                    message = "Press <sprite name=\"E\"> to mine ";
-                }
-                playerInteractUI.Show(message);
+                return;
             }
         }
-        else
+        else if (showingPrompt)
         {
             playerInteractUI.Hide();
+            showingPrompt = false;
         }
     }
 
