@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -17,15 +16,15 @@ public class TileManager : MonoBehaviour
     }
 
     // Public variables
-    public Transform player;
-    public float fadeDistance;
     public Dictionary<Vector2Int, GridTile> mapGrid = new Dictionary<Vector2Int, GridTile>();
     public GameObject[] tiles;
     public GameObject startTile;
     public GameObject[] ores;
     public int generationRadius = 4; // Maximum radius from player
-    
+
     // Private variables
+    private Transform player;
+    private WorldObjectManager worldObjectManager;
     private readonly int gridScale = 9;
     private Vector2Int tileOrigin;
     private Vector2Int lastDirection = Vector2Int.up;
@@ -36,6 +35,8 @@ public class TileManager : MonoBehaviour
     {
         // References
         player = GameObject.Find("Astronaut").transform;
+        worldObjectManager = GameObject.Find("WorldObjectManager").GetComponent<WorldObjectManager>();
+
         tileOrigin = new Vector2Int(
             Mathf.RoundToInt(player.position.x / gridScale), 
             Mathf.RoundToInt(player.position.z / gridScale)
@@ -65,6 +66,7 @@ public class TileManager : MonoBehaviour
             TileGen(tileOrigin, lastDirection);
 
             DespawnTiles();
+            worldObjectManager.CheckDistantObjects();
         }
     }
 
@@ -252,7 +254,9 @@ public class TileManager : MonoBehaviour
         if (spawnRate == 0)
         {
             Vector3 orePos = new(tempPos.x, 0f, tempPos.z);
-            Instantiate(ores[rndOre], (ores[rndOre].transform.position + orePos), rot);
+            GameObject ore = Instantiate(ores[rndOre], (ores[rndOre].transform.position + orePos), rot);
+
+            worldObjectManager.AddWorldObject(ore);
         }
         oreSpawning = false;
     }

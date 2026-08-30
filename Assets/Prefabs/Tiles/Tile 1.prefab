@@ -430,7 +430,6 @@ GameObject:
   - component: {fileID: 3298408195953482717}
   - component: {fileID: 8249259155428601967}
   - component: {fileID: 5497275230903161173}
-  - component: {fileID: 8237536492014795622}
   m_Layer: 0
   m_Name: Plane
   m_TagString: Untagged
@@ -532,17 +531,3 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &8237536492014795622
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9188207340604116620}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 410421dcd25d62747951987605e6c392, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  fadeDistance: 36
-  lastPos: {x: 0, y: 0, z: 0}
