@@ -5,11 +5,11 @@
 
 ## Preview Screenshots
 
-![Main Menu](Screenshots/Screenshot%202026-10-31%20203949.png)
+![Main Menu](Assets/Art/Screenshots/Main.png)
 
-![Explore](Screenshots/Screenshot%202026-10-31%20204002.png)
+![Explore](Assets/Art/Screenshots/Explore.png)
 
-![Drilling](Screenshots/Screenshot%202026-10-31%20204028.png)
+![Drilling](Assets/Art/Screenshots/Mine.png)
 
 ## How did I come up with this project?
 
