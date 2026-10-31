@@ -5,6 +5,12 @@
 
 ## Preview Screenshots
 
+![Main Menu](Screenshots/Screenshot%202026-10-31%20203949.png)
+
+![Explore](Screenshots/Screenshot%202026-10-31%20204002.png)
+
+![Drilling](Screenshots/Screenshot%202026-10-31%20204028.png)
+
 ## How did I come up with this project?
 
 This was originally just a passion project that I had undertaken, but as with many projects I have started it was put on the backburner purely due to a lack of time to work on it.
