@@ -53,5 +53,3 @@ The main challenges I had were implementing the different systems in such as way
 Another challenge (which I had kinda placed on myself) was the fact that I was planning on releasing the game for mobile devices. This resulted in a whole batch of other issues such as making sure the game was optimised enough which led me to make an object pooling system. Also making sure the UI was suited for mobile was a whole other issue.
 
 Despite the problems that the project had faced, I am happy with the state that it is currently in.
-
-[Aperture favicon](https://commons.wikimedia.org/wiki/File:Aperture_Science.svg)
