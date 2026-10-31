@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class PlayerInteractUI : MonoBehaviour
 {
-    [SerializeField] private GameObject container;
+    public GameObject container;
     [SerializeField] private TMP_SpriteAsset mobileSprites;
 
     private void Start()

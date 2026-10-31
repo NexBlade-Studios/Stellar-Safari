@@ -9,19 +9,28 @@ public class PlayerController : MonoBehaviour
     // Public variables
     public Rigidbody rb;
     public Vector3 oreCheckDir;
+    private int playerHealth;
+    public int copperCount = 0;
+    public int ironCount = 0;
 
     // Private variables
     private Ray moveCheckRay;
     private SwipeLogger swipeLogger;
     private GroundChecker groundChecker;
-    private Animator anim;
+    private GameObject interactManager;
+    private TileManager tileManager;
+    public Animator anim;
 
-    private bool isMoving;
+    public bool isMoving;
     private bool flipflop = true;
     [SerializeField] private bool isRotating;
     [SerializeField] private float moveForce;
     [SerializeField] private float jumpForce;
     [SerializeField] private float rotateDuration;
+
+
+    private TextMeshProUGUI copperCountText;
+    private TextMeshProUGUI ironCountText;
 
     void Start()
     {
@@ -29,7 +38,11 @@ public class PlayerController : MonoBehaviour
         rb = gameObject.GetComponent<Rigidbody>();
         swipeLogger = GameObject.Find("SwipeLogger").GetComponent<SwipeLogger>();
         groundChecker = GameObject.Find("GroundChecker").GetComponent<GroundChecker>();
+        interactManager = GameObject.Find("InteractManager");
+        tileManager = GameObject.Find("TileManager").GetComponent<TileManager>();
         anim = gameObject.GetComponent<Animator>();
+        copperCountText = GameObject.Find("Copper").GetComponent<TextMeshProUGUI>();
+        ironCountText = GameObject.Find("Iron").GetComponent<TextMeshProUGUI>();
     }
 
     void Update()
@@ -52,6 +65,8 @@ public class PlayerController : MonoBehaviour
         {
             swipeLogger.swipeDir = null; // If player is not grounded, swipe direction is reset
         }
+        copperCountText.text = "Copper: " + copperCount;
+        ironCountText.text = "Iron: " + ironCount;
     }
 
     private void Movement(string dir, KeyCode key, Vector3 moveCheckDir, int angle)
@@ -61,6 +76,7 @@ public class PlayerController : MonoBehaviour
         {
             swipeLogger.swipeDir = "Null"; // Resets swipe direction
             oreCheckDir = moveCheckDir;
+            interactManager.GetComponent<MineOre>().ResetDrillTransform();
             isMoving = true;
             if (!isRotating)
             {
@@ -86,6 +102,7 @@ public class PlayerController : MonoBehaviour
             }
             isMoving = false;
         }
+        interactManager.GetComponent<MineOre>().OreInteract();
     }
 
     IEnumerator RotatePlayer(Quaternion target, float duration)
@@ -111,5 +128,12 @@ public class PlayerController : MonoBehaviour
     {
         moveCheckRay = new(groundChecker.transform.position, moveDir);
         if (Physics.Raycast(moveCheckRay, out hit, 3f)) {return false;} else {return true;}
+    }
+
+    public void ReturnToShip()
+    {
+        transform.position = new Vector3(0, 3, 0);
+        transform.rotation = Quaternion.identity;
+        tileManager.TileGen(new Vector2Int(0, 0), Vector2Int.up);
     }
 }

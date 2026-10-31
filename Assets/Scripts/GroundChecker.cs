@@ -10,9 +10,8 @@ public class GroundChecker : MonoBehaviour
     // Private variables
     private Ray groundCheckRay;
     private PlayerController player;
-
     [SerializeField] private float checkDistance;
-    
+
     void Start()
     {
         // References
@@ -24,6 +23,6 @@ public class GroundChecker : MonoBehaviour
     {
         // Creates a new Ray just above the base of the player and checks if grounded
         groundCheckRay = new(player.transform.position + Vector3.up * 0.1f, Vector3.down);
-        if (Physics.Raycast(groundCheckRay, checkDistance)) {onGround = true;} else {onGround = false;}
+        if (Physics.Raycast(groundCheckRay, checkDistance)) { onGround = true; } else { onGround = false; }
     }
 }

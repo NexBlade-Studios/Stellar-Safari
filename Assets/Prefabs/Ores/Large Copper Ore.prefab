@@ -100,6 +100,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7490035606314765222}
   - component: {fileID: 3257415710754556824}
+  - component: {fileID: 6256638824586911641}
   m_Layer: 0
   m_Name: Large Copper Ore
   m_TagString: Ore
@@ -145,6 +146,21 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2.9306884, y: 1.9458139, z: 2.1928668}
   m_Center: {x: -0.1020993, y: 0.03584683, z: 0.08352536}
+--- !u!114 &6256638824586911641
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3585380019564838159}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fde12798319d4fb4e81c11d4b872ce48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Ore
+  oreData: {fileID: 11400000, guid: abb008b8cc157c84fbba30b8606ee604, type: 2}
+  currentDurability: 100
+  oreBreak: {fileID: 8300000, guid: 4bdc9ec68a0eaa14aaf7ff7cf0744297, type: 3}
 --- !u!1 &5472975159440526930
 GameObject:
   m_ObjectHideFlags: 0

@@ -93,7 +93,7 @@ public class TileManager : MonoBehaviour
     }
 
     // Determines where tiles should spawn
-    private void TileGen(Vector2Int centre, Vector2Int direction)
+    public void TileGen(Vector2Int centre, Vector2Int direction)
     {
         for (int x = -generationRadius;  x <= generationRadius; x++)
         {

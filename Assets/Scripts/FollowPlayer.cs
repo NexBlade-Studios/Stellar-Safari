@@ -9,7 +9,6 @@ public class FollowPlayer : MonoBehaviour
     [SerializeField] private Vector3 offset;
     private GameObject player;
 
-    [SerializeField] private bool lerp;
     void Start()
     {
         // References
@@ -18,13 +17,7 @@ public class FollowPlayer : MonoBehaviour
     void Update()
     {
         playerPos = player.transform.position; // References the player's position
-        // Either lerps to the player position or just follows it directly
-        if (lerp)
-        {
-            transform.position = Vector3.Lerp(transform.position, new Vector3(playerPos.x, 0, playerPos.z) + offset, 0.01f);
-        }
-        else
-        {
-            transform.position = new Vector3(player.transform.position.x + offset.x, transform.position.y, player.transform.position.z +offset.z);}
+        // Follows player position directly with offset
+        transform.position = new Vector3(player.transform.position.x + offset.x, transform.position.y, player.transform.position.z +offset.z);
     }
 }

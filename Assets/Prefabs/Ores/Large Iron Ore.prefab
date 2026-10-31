@@ -190,6 +190,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7442202263208985983}
   - component: {fileID: 7653268063640834792}
+  - component: {fileID: -4929830695991979110}
   m_Layer: 0
   m_Name: Large Iron Ore
   m_TagString: Ore
@@ -235,3 +236,18 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2.9306884, y: 1.9458139, z: 2.1928668}
   m_Center: {x: -0.1020993, y: 0.03584683, z: 0.08352536}
+--- !u!114 &-4929830695991979110
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8227822574607884396}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fde12798319d4fb4e81c11d4b872ce48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Ore
+  oreData: {fileID: 11400000, guid: 54f7f0748b5cf7a4998ddb6811ce82be, type: 2}
+  currentDurability: 0.815
+  oreBreak: {fileID: 8300000, guid: 4bdc9ec68a0eaa14aaf7ff7cf0744297, type: 3}
